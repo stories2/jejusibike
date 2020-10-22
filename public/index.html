@@ -31,38 +31,90 @@
               };
 
       var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+      // 일반 지도와 스카이뷰로 지도 타입을 전환할 수 있는 지도타입 컨트롤을 생성합니다
+      var mapTypeControl = new kakao.maps.MapTypeControl();
 
-      const data = {"markers":[{"infohtml":"","keepCnt":"8","returnableCnt":"6","percent":"0","name":"01.ì¤ë¬¸ëì¬ì±ë¬¸íì¼í°","imageFile":"/images/station1.jpg","lng":"126.500573158264","lat":"33.4843952770543","rentableCnt":"2"},{"infohtml":"","keepCnt":"8","returnableCnt":"7","percent":"0","name":"02.ë¡ìì¼íì¼í°","imageFile":"/images/station2.jpg","lng":"126.491518020629","lat":"33.4890482351654","rentableCnt":"1"},{"infohtml":"","keepCnt":"8","returnableCnt":"5","percent":"0","name":"03.ë¡¯ë°ìí°í¸í","imageFile":"/images/station3.jpg","lng":"126.486110687255","lat":"33.4910167191127","rentableCnt":"3"},{"infohtml":"","keepCnt":"8","returnableCnt":"5","percent":"0","name":"04.íë¼ëìê´","imageFile":"/images/station4.jpg","lng":"126.477514","lat":"33.478223","rentableCnt":"3"},{"infohtml":"","keepCnt":"8","returnableCnt":"7","percent":"0","name":"05.êµ­ê¸°ë¡(ëë¦¼A)","imageFile":"/images/station5.jpg","lng":"126.490659713745","lat":"33.4786324209085","rentableCnt":"1"},{"infohtml":"","keepCnt":"8","returnableCnt":"8","percent":"100","name":"06.ìí¸ì¼í°(íë¼ëìê´)","imageFile":"/images/station6ArtCenter.jpg","lng":"126.514735221862","lat":"33.4754823747654","rentableCnt":"0"},{"infohtml":"","keepCnt":"8","returnableCnt":"7","percent":"0","name":"07.ìë½êµí","imageFile":"/images/station07.jpg","lng":"126.543544","lat":"33.510501","rentableCnt":"1"},{"infohtml":"","keepCnt":"8","returnableCnt":"5","percent":"0","name":"08.ë²¤ì²ë§ë£¨","imageFile":"/images/station08.jpg","lng":"126.529772","lat":"33.499902","rentableCnt":"3"},{"infohtml":"","keepCnt":"8","returnableCnt":"5","percent":"0","name":"09.ì¤ë¼ì§êµ¬ë","imageFile":"/images/station09.jpg","lng":"126.516366","lat":"33.499476","rentableCnt":"3"},{"keepCnt":"8","returnableCnt":"5","percent":"0","name":"10.íëí´ë³ê³µì°ì¥","imageFile":"/images/station08.jpg","lng":"126.524766","lat":"33.517430","rentableCnt":"3"},{"keepCnt":"8","returnableCnt":"5","percent":"0","name":"11.êµ­ë¯¼ì²´ì¡ì¼í°","imageFile":"/images/station09.jpg","lng":"126.547667","lat":"33.514548","rentableCnt":"3"}],"bike_cnt":"187","station_cnt":"11"}
+      // 지도에 컨트롤을 추가해야 지도위에 표시됩니다
+      // kakao.maps.ControlPosition은 컨트롤이 표시될 위치를 정의하는데 TOPRIGHT는 오른쪽 위를 의미합니다
+      map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
 
-      let positions = [];
+      // 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
+      var zoomControl = new kakao.maps.ZoomControl();
+      map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
       let markers = [];
 
-      positions = data.markers.map(mark => {
-        return {
-          content: `<div>${mark.name}</div><span>${mark.rentableCnt} / ${mark.keepCnt}</span>`,
-          latlng: new kakao.maps.LatLng(mark.lat, mark.lng)
-        }
-      })
+      loadBikeData();
 
-      positions.forEach(pos => {
-        const marker = new kakao.maps.Marker({
-          map: map, // 마커를 표시할 지도
-          position: pos.latlng // 마커의 위치
-        });
+      let interval = setInterval(() => {
+          loadBikeData();
+      }, 30000)
 
-        // 마커에 표시할 인포윈도우를 생성합니다
-        const infowindow = new kakao.maps.InfoWindow({
-          content: pos.content // 인포윈도우에 표시할 내용
-        });
+      function loadBikeData() {
+          fetch('https://asia-northeast1-jejusibike.cloudfunctions.net/bike')
+              .then(response => response.json())
+              .then(response => {
+                  if (response.success) {
+                      return response.data;
+                  } else {
+                      throw response.message;
+                  }
+              })
+              .then(json => setMarkers(json))
+              .catch(err => {
+                  alert(err.message);
+                  clearInterval(interval);
+              })
+      }
 
-        // 마커에 mouseover 이벤트와 mouseout 이벤트를 등록합니다
-        // 이벤트 리스너로는 클로저를 만들어 등록합니다
-        // for문에서 클로저를 만들어 주지 않으면 마지막 마커에만 이벤트가 등록됩니다
-        kakao.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, infowindow));
-        kakao.maps.event.addListener(marker, 'mouseout', makeOutListener(infowindow));
+      function setMarkers(data) {
+          let positions = [];
+          markers.forEach(mark => {
+              delete mark;
+          })
 
-        markers.push(marker);
-      })
+          positions = data.markers.map(mark => {
+              let currColor = '';
+              const remainPercent = Number(mark.rentableCnt) / Number(mark.keepCnt) * 100
+              if (remainPercent > 60) {
+                  currColor = 'plenty.png'
+              } else if (25 < remainPercent && remainPercent <= 60) {
+                  currColor = 'some.png'
+              } else if (0 < remainPercent && remainPercent <= 25) {
+                  currColor = 'few.png'
+              } else {
+                  currColor = 'empty.png'
+              }
+              console.log(mark, remainPercent, currColor);
+              return {
+                  content: `<div>${mark.name}</div><span>${mark.rentableCnt} / ${mark.keepCnt}</span>`,
+                  latlng: new kakao.maps.LatLng(mark.lat, mark.lng),
+                  currColor: currColor
+              }
+          })
+
+          positions.forEach(pos => {
+              console.log(pos);
+              const markerImage = new kakao.maps.MarkerImage(`./img/${pos.currColor}`, new kakao.maps.Size(16, 16))
+              const marker = new kakao.maps.Marker({
+                  map: map, // 마커를 표시할 지도
+                  position: pos.latlng, // 마커의 위치
+                  image: markerImage
+              });
+
+              // 마커에 표시할 인포윈도우를 생성합니다
+              const infowindow = new kakao.maps.InfoWindow({
+                  content: pos.content // 인포윈도우에 표시할 내용
+              });
+
+              // 마커에 mouseover 이벤트와 mouseout 이벤트를 등록합니다
+              // 이벤트 리스너로는 클로저를 만들어 등록합니다
+              // for문에서 클로저를 만들어 주지 않으면 마지막 마커에만 이벤트가 등록됩니다
+              kakao.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, infowindow));
+              kakao.maps.event.addListener(marker, 'mouseout', makeOutListener(infowindow));
+
+              markers.push(marker);
+          })
+      }
 
       // 인포윈도우를 표시하는 클로저를 만드는 함수입니다
       function makeOverListener(map, marker, infowindow) {
