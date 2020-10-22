@@ -3,78 +3,80 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
+    <title>제주도 공용 자전거 실시간 현황 판</title>
 
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/7.24.0/firebase-app.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/7.24.0/firebase-auth.js"></script>
-    <script defer src="/__/firebase/7.24.0/firebase-database.js"></script>
-    <script defer src="/__/firebase/7.24.0/firebase-messaging.js"></script>
-    <script defer src="/__/firebase/7.24.0/firebase-storage.js"></script>
-    <script defer src="/__/firebase/7.24.0/firebase-analytics.js"></script>
-    <script defer src="/__/firebase/7.24.0/firebase-remote-config.js"></script>
-    <script defer src="/__/firebase/7.24.0/firebase-performance.js"></script>
-    <!-- initialize the SDK after all desired features are loaded -->
-    <script defer src="/__/firebase/init.js"></script>
-
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
-    </style>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/style.css">
   </head>
   <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+    <div class="container">
+      <div class="row">
+<!--        <div class="d-none d-sm-block col-sm-1 col-md-2 col-lg-3 col-xl-4">-->
+<!--        </div>-->
+<!--        <div id="map" class="col-sm-10 col-md-8 col-lg-6 col-xl-4">-->
+<!--        </div>-->
+<!--        <div class="d-none d-sm-block col-sm-1 col-md-2 col-lg-3 col-xl-4"></div>-->
+            <div id="map" class="col-12">
+            </div>
+      </div>
     </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
-
+    <script src="js/jquery-3.5.1.min.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cd1f41a4ffe96f9d7132956c16fa3ae2"></script>
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+      var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+              mapOption = {
+                center: new kakao.maps.LatLng(33.4956788,126.5202159), // 지도의 중심좌표
+                level: 7 // 지도의 확대 레벨
+              };
 
-        try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+      var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+
+      const data = {"markers":[{"infohtml":"","keepCnt":"8","returnableCnt":"6","percent":"0","name":"01.ì¤ë¬¸ëì¬ì±ë¬¸íì¼í°","imageFile":"/images/station1.jpg","lng":"126.500573158264","lat":"33.4843952770543","rentableCnt":"2"},{"infohtml":"","keepCnt":"8","returnableCnt":"7","percent":"0","name":"02.ë¡ìì¼íì¼í°","imageFile":"/images/station2.jpg","lng":"126.491518020629","lat":"33.4890482351654","rentableCnt":"1"},{"infohtml":"","keepCnt":"8","returnableCnt":"5","percent":"0","name":"03.ë¡¯ë°ìí°í¸í","imageFile":"/images/station3.jpg","lng":"126.486110687255","lat":"33.4910167191127","rentableCnt":"3"},{"infohtml":"","keepCnt":"8","returnableCnt":"5","percent":"0","name":"04.íë¼ëìê´","imageFile":"/images/station4.jpg","lng":"126.477514","lat":"33.478223","rentableCnt":"3"},{"infohtml":"","keepCnt":"8","returnableCnt":"7","percent":"0","name":"05.êµ­ê¸°ë¡(ëë¦¼A)","imageFile":"/images/station5.jpg","lng":"126.490659713745","lat":"33.4786324209085","rentableCnt":"1"},{"infohtml":"","keepCnt":"8","returnableCnt":"8","percent":"100","name":"06.ìí¸ì¼í°(íë¼ëìê´)","imageFile":"/images/station6ArtCenter.jpg","lng":"126.514735221862","lat":"33.4754823747654","rentableCnt":"0"},{"infohtml":"","keepCnt":"8","returnableCnt":"7","percent":"0","name":"07.ìë½êµí","imageFile":"/images/station07.jpg","lng":"126.543544","lat":"33.510501","rentableCnt":"1"},{"infohtml":"","keepCnt":"8","returnableCnt":"5","percent":"0","name":"08.ë²¤ì²ë§ë£¨","imageFile":"/images/station08.jpg","lng":"126.529772","lat":"33.499902","rentableCnt":"3"},{"infohtml":"","keepCnt":"8","returnableCnt":"5","percent":"0","name":"09.ì¤ë¼ì§êµ¬ë","imageFile":"/images/station09.jpg","lng":"126.516366","lat":"33.499476","rentableCnt":"3"},{"keepCnt":"8","returnableCnt":"5","percent":"0","name":"10.íëí´ë³ê³µì°ì¥","imageFile":"/images/station08.jpg","lng":"126.524766","lat":"33.517430","rentableCnt":"3"},{"keepCnt":"8","returnableCnt":"5","percent":"0","name":"11.êµ­ë¯¼ì²´ì¡ì¼í°","imageFile":"/images/station09.jpg","lng":"126.547667","lat":"33.514548","rentableCnt":"3"}],"bike_cnt":"187","station_cnt":"11"}
+
+      let positions = [];
+      let markers = [];
+
+      positions = data.markers.map(mark => {
+        return {
+          content: `<div>${mark.name}</div><span>${mark.rentableCnt} / ${mark.keepCnt}</span>`,
+          latlng: new kakao.maps.LatLng(mark.lat, mark.lng)
         }
-      });
+      })
+
+      positions.forEach(pos => {
+        const marker = new kakao.maps.Marker({
+          map: map, // 마커를 표시할 지도
+          position: pos.latlng // 마커의 위치
+        });
+
+        // 마커에 표시할 인포윈도우를 생성합니다
+        const infowindow = new kakao.maps.InfoWindow({
+          content: pos.content // 인포윈도우에 표시할 내용
+        });
+
+        // 마커에 mouseover 이벤트와 mouseout 이벤트를 등록합니다
+        // 이벤트 리스너로는 클로저를 만들어 등록합니다
+        // for문에서 클로저를 만들어 주지 않으면 마지막 마커에만 이벤트가 등록됩니다
+        kakao.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, infowindow));
+        kakao.maps.event.addListener(marker, 'mouseout', makeOutListener(infowindow));
+
+        markers.push(marker);
+      })
+
+      // 인포윈도우를 표시하는 클로저를 만드는 함수입니다
+      function makeOverListener(map, marker, infowindow) {
+        return function() {
+          infowindow.open(map, marker);
+        };
+      }
+
+      // 인포윈도우를 닫는 클로저를 만드는 함수입니다
+      function makeOutListener(infowindow) {
+        return function() {
+          infowindow.close();
+        };
+      }
     </script>
   </body>
 </html>
