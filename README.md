@@ -1,2 +1,5 @@
-# jejusibike
-jejusi public bike
+# 제주시 공공 자전거 현황
+
+자전거가 각각의 정류소에 얼마나 남았는지를 확인할 수 있는 페이지 구현
+
+<img src="IMG_90E65326006C-1.jpeg" width="40%">
