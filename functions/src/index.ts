@@ -22,3 +22,8 @@ export const bike = functions.region('asia-northeast1').https.onRequest((request
     });
   })
 });
+
+export const test = functions.region('asia-northeast1').https.onRequest((req, res) => {
+  console.log('[test]', JSON.stringify(req.body));
+  res.send('ok')
+})
