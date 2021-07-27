@@ -30,11 +30,12 @@ export const test = functions.region('asia-northeast1').https.onRequest((req, re
 
 export const kakaoWork = functions.region('asia-northeast1').https.onRequest((request, response) => {
   response.set('Access-Control-Allow-Origin', '*');
+  response.set('Access-Control-Allow-Headers', '*');
   axios.post('https://api.kakaowork.com/v1/messages.send', request.body, {
     headers: {
       // Overwrite Axios's automatically set Content-Type
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer 33265810.93837dc823e2497d9ebb6cdb04669d8a'
+      'Authorization': functions.config().kakao.api_key
     }
   })
       .then(function (res) {
